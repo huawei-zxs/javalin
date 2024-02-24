@@ -207,8 +207,8 @@ fun urlDecode(s: String): String = URLDecoder.decode(s.replace("+", "%2B"), "UTF
  * @throws IllegalStateException if specified string is not valid Basic auth header
  */
 fun getBasicAuthCredentials(authorizationHeader: String?): BasicAuthCredentials? =
-    authorizationHeader
-        ?.takeIf { authorizationHeader.startsWith("Basic ") }
+    authorizationHeader!!
+        .takeIf { authorizationHeader.startsWith("Basic ") }
         ?.removePrefix("Basic ")
         ?.let { Base64.getDecoder().decode(it).decodeToString() }
         ?.split(':', limit = 2)

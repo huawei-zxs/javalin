@@ -258,6 +258,16 @@ class TestRequest {
     }
 
     @Test
+    fun `basicAuthCredentials returns null when authorization header is missing`() = TestUtil.test { app, http ->
+        app.get("/") { ctx ->
+            val basicAuthCredentials = ctx.basicAuthCredentials()
+            ctx.result(basicAuthCredentials?.username + "|" + basicAuthCredentials?.password)
+        }
+        val response = Unirest.get("${http.origin}/").asString()
+        assertThat(response.body).isEqualTo("null|null")
+    }
+
+    @Test
     fun `basicAuthCredentials extracts username and password with colon`() = TestUtil.test { app, http ->
         app.get("/") { ctx ->
             val basicAuthCredentials = ctx.basicAuthCredentials()
