@@ -19,7 +19,7 @@ object RateLimitUtil {
     val limiters = ConcurrentHashMap<TimeUnit, RateLimiter>()
     var keyFunction: (Context) -> String = { ip(it) + it.method() + it.matchedPath() }
     val executor: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
-    private fun ip(ctx: Context) = ctx.header("X-Forwarded-For")?.split(",")?.get(0) ?: ctx.ip()
+    private fun ip(ctx: Context) = ctx.header("X-Forwarded-For")!!.split(",").get(0)
 }
 
 class RateLimiter(val timeUnit: TimeUnit) {

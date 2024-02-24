@@ -56,4 +56,18 @@ class TestRateLimitUtil {
         assertThat(http.get("/ms").httpCode()).isEqualTo(OK)
     }
 
+    @Test
+    fun `rate limiting works when request does not include X-Forwarded-For header`() = TestUtil.test { app, http ->
+        app.get("/no-xff") { NaiveRateLimit.requestPerTimeUnit(it, 2, TimeUnit.SECONDS) }
+        assertThat(http.get("/no-xff").httpCode()).isEqualTo(OK)
+        assertThat(http.get("/no-xff").httpCode()).isEqualTo(OK)
+    }
+
+    @Test
+    fun `rate limiting uses X-Forwarded-For header when present`() = TestUtil.test { app, http ->
+        app.get("/xff") { NaiveRateLimit.requestPerTimeUnit(it, 2, TimeUnit.SECONDS) }
+        assertThat(http.get("/xff", mapOf("X-Forwarded-For" to "1.2.3.4")).httpCode()).isEqualTo(OK)
+        assertThat(http.get("/xff", mapOf("X-Forwarded-For" to "1.2.3.4")).httpCode()).isEqualTo(OK)
+    }
+
 }
