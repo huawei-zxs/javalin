@@ -246,6 +246,17 @@ class TestResponse {
     }
 
     @Test
+    fun `seekable - open-ended range returns exactly one chunk and correct content-range`() = TestUtil.test { app, http ->
+        app.get("/seekable-open") { it.writeSeekableStream(getSeekableInput(), ContentType.PLAIN) }
+        val response = Unirest.get(http.origin + "/seekable-open")
+            .headers(mapOf(Header.RANGE to "bytes=${SeekableWriter.chunkSize}-"))
+            .asString()
+        assertThat(response.httpCode()).isEqualTo(HttpStatus.PARTIAL_CONTENT)
+        assertThat(response.body).isEqualTo("b".repeat(SeekableWriter.chunkSize))
+        assertThat(response.headers[Header.CONTENT_RANGE]?.get(0)).isEqualTo("bytes ${SeekableWriter.chunkSize}-${SeekableWriter.chunkSize * 2 - 1}/${SeekableWriter.chunkSize * 3}")
+    }
+
+    @Test
     fun `seekable - large file works`() = TestUtil.test { app, http ->
         val prefixSize = 1L shl 31 //2GB
         val contentSize = 100L
