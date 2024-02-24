@@ -56,9 +56,6 @@ public class VueDependencyResolver {
      * component is found, an error string otherwise.
      */
     public String resolve(final String componentId) {
-        if (!componentIdToOwnContent.containsKey(componentId)) {
-            throw new IllegalArgumentException(String.format("Component %s not found in app %s", componentId, appName));
-        }
         if (componentIdToDependencyContent.containsKey(componentId)) {
             return componentIdToDependencyContent.get(componentId);
         }

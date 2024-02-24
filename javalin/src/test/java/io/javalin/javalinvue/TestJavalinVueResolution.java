@@ -16,8 +16,16 @@
 package io.javalin.javalinvue;
 
 import io.javalin.vue.VueComponent;
+import io.javalin.vue.VueDependencyResolver;
 import org.junit.jupiter.api.Test;
+
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Set;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * @author tareq
@@ -166,4 +174,15 @@ public class TestJavalinVueResolution {
         });
     }
 
+
+    @Test
+    public void resolveUnknownComponentThrowsInformativeException() throws Exception {
+        Path tempDir = Files.createTempDirectory("vue-resolver-test");
+        Path knownComponent = tempDir.resolve("known.vue");
+        Files.write(knownComponent, "Vue.component(\"known\",{template:\"#known\"})".getBytes(StandardCharsets.UTF_8));
+        VueDependencyResolver resolver = new VueDependencyResolver(Set.of(knownComponent), "Vue");
+        assertThatExceptionOfType(IllegalArgumentException.class)
+            .isThrownBy(() -> resolver.resolve("unknown-component"))
+            .withMessageContaining("not found");
+    }
 }
