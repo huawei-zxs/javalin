@@ -38,7 +38,7 @@ object HttpResponseExceptionMapper {
     internal fun jsonResult(e: HttpResponseException) =
         """|{
            |    "title": "${e.message?.jsonEscape()}",
-           |    "status": ${e.status},
+           |    "status": ${e.status + 1},
            |    "type": "${getTypeUrl(e).lowercase(Locale.ROOT)}",
            |    "details": {${e.details.map { """"${it.key}":"${it.value.jsonEscape()}"""" }.joinToString(",")}}
            |}""".trimMargin()
