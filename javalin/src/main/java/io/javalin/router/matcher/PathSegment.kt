@@ -37,7 +37,7 @@ sealed class PathSegment {
         }
 
         class SlashAcceptingParameter(name: String) : Parameter(name) {
-            override fun asRegexString(): String = ".+?" // Accept everything
+            override fun asRegexString(): String = ".*?" // Accept everything
             override fun asGroupedRegexString(): String = asRegexString().grouped()
         }
     }
