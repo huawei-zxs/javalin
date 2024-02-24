@@ -32,6 +32,13 @@ internal class TestTrailingSlashes {
     }
 
     @Test
+    fun `trailing slash routes match without the trailing slash too`() = TestUtil.test { app, http ->
+        app.get("/hello/") { it.result("Hello, slash!") }
+        assertThat(http.getBody("/hello")).isEqualTo("Hello, slash!")
+        assertThat(http.getBody("/hello/")).isEqualTo("Hello, slash!")
+    }
+
+    @Test
     fun `trailing slashes are ignored by default - ApiBuilder`() = TestUtil.test(
         Javalin.create {
             it.router.apiBuilder {
