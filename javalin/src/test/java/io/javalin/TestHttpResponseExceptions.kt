@@ -287,6 +287,30 @@ class TestHttpResponseExceptions {
         }
     }
 
+
+    @Test
+    fun `http response exception with only status code uses default status message`() = TestUtil.test { app, http ->
+        app.get("/") { throw HttpResponseException(BAD_REQUEST) }
+        assertThat(http.getBody("/")).isEqualTo(BAD_REQUEST.message)
+        assertThat(http.get("/").httpCode()).isEqualTo(BAD_REQUEST)
+    }
+
+    @Test
+    fun `http response exception with only status code uses default status message for json clients`() = TestUtil.test { app, http ->
+        app.get("/") { throw HttpResponseException(BAD_REQUEST) }
+        val response = http.jsonGet("/")
+        assertThat(response.headers.getFirst(Header.CONTENT_TYPE)).isEqualTo(ContentType.JSON)
+        assertThat(response.httpCode()).isEqualTo(BAD_REQUEST)
+        assertThat(response.body).isEqualTo(
+            """{
+            |    "title": "Bad Request",
+            |    "status": 400,
+            |    "type": "https://javalin.io/documentation#error-responses",
+            |    "details": {}
+            |}""".trimMargin()
+        )
+    }
+
     private fun allExceptions() = setOf(
         ContinueResponse(),
         SwitchingProtocolsResponse(),

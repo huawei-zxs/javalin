@@ -75,7 +75,7 @@ open class HttpResponseException @JvmOverloads constructor(
 ) : RuntimeException(message) {
     constructor(
         status: HttpStatus,
-        message: String = status.message,
+        message: String = "",
         details: Map<String, String> = mapOf()
     ) : this(status.code, message, details)
 }
