@@ -92,4 +92,17 @@ class TestMultipleSlashes {
             assertThat(http.getStatus(it)).isNotNull.isEqualTo(NOT_FOUND)
         }
     }
+
+    @Test
+    fun `trailing slash routes match without trailing slash when multipleSlashes and ignoreTrailingSlashes are enabled`() =
+        TestUtil.test(
+            Javalin.create {
+                it.router.treatMultipleSlashesAsSingleSlash = true
+            }
+        ) { app, http ->
+            app.get("/a/") { it.result("a/") }
+            assertThat(http.getBody("/a")).isEqualTo("a/")
+            assertThat(http.getBody("/a/")).isEqualTo("a/")
+            assertThat(http.getBody("/a//")).isEqualTo("a/")
+        }
 }

@@ -33,8 +33,8 @@ class PathParser(private val rawPath: String, routerConfig: RouterConfig) {
             // the root path is special: we already add a leading slash during regex construction,
             // so we do not need to add an extra slash with the suffix
             rawPath == "/" -> ""
-            routerConfig.ignoreTrailingSlashes -> "/*"
             rawPath.endsWith("/") -> "/+"
+            routerConfig.ignoreTrailingSlashes -> "/*"
             else -> ""
         }
     } else {
